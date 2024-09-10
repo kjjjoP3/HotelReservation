@@ -92,7 +92,7 @@ public class ReservationService {
 		Scanner scanner = new Scanner(System.in);
 
 		while (true) {
-			System.out.println("Which room do you want to book? (Enter room number or 'N' to quit):");
+			System.out.println("Which room do you want to book? (Enter the 'Room number' to book a room, or press 'N' to cancel):");
 			String input = scanner.nextLine();
 			if (input.equalsIgnoreCase("N")) {
 				return false; // User chose to exit
@@ -125,7 +125,11 @@ public class ReservationService {
 	}
 
 	public void printAllReservations() {
-		reservations.forEach(reservation -> System.out.println(reservation));
+		if (reservations.isEmpty()) {
+			System.out.println("No reservations found.");
+		} else {
+			reservations.forEach(reservation -> System.out.println(reservation));
+		}
 	}
 
 	public Collection<IRoom> getAllRooms() {

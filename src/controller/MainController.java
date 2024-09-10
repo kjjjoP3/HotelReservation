@@ -20,14 +20,34 @@ public class MainController {
 		for (Customer c : HotelRepository.getAllCustomers()) {
 			System.out.println(c);
 		}
-		String emailAddress = Utils.getInput(scMain, Constants.EMAIL_PROMPT);
-		if (!Utils.isValidEmail(emailAddress))
-			return;
+		String emailAddress;
+		// Loop until a valid email address is entered
+		while (true) {
+			String inputEmail = Utils.getInput(scMain, Constants.EMAIL_PROMPT);
+			// Check if the email format is valid and if it exists in the list of customers
+			if (Utils.isValidEmail(inputEmail) && HotelRepository.getAllCustomers() != null
+					&& HotelRepository.getAllCustomers().stream().anyMatch(c -> c.getEmail().equals(inputEmail))) {
+				emailAddress = inputEmail;
+				break; // Exit loop if email is valid and exists
+			} else {
+				System.out.println("Invalid email address. Please enter a valid registered email.");
+			}
+		}
 
-		Date checkInDate = Utils.getDateInput(scMain, Constants.CHECK_IN_DATE_PROMPT);
-		Date checkOutDate = Utils.getDateInput(scMain, Constants.CHECK_OUT_DATE_PROMPT);
-		if (!Utils.checkValidDates(checkInDate, checkOutDate))
-			return;
+		Date checkInDate;
+		Date checkOutDate;
+
+		// Loop until valid check-in and check-out dates are provided
+		while (true) {
+			checkInDate = Utils.getDateInput(scMain, Constants.CHECK_IN_DATE_PROMPT);
+			checkOutDate = Utils.getDateInput(scMain, Constants.CHECK_OUT_DATE_PROMPT);
+
+			if (Utils.checkValidDates(checkInDate, checkOutDate)) {
+				break;
+			} else {
+				System.out.println("Please enter valid check-in and check-out dates.");
+			}
+		}
 
 		if (HotelRepository.findARoom(checkInDate, checkOutDate, emailAddress)) {
 			System.out.println("Room booked");

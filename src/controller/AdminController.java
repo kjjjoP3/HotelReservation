@@ -1,9 +1,11 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
+import model.Customer;
 import model.IRoom;
 import repository.AdminRepository;
 import utils.Constants;
@@ -37,41 +39,50 @@ public class AdminController {
 		}
 	}
 
-	// Method to display all customers
 	private void displayAllCustomers() {
-		System.out.println(AdminRepository.getAllCustomers().toString());
+		Collection<Customer> customers = AdminRepository.getAllCustomers();
+		if (customers.isEmpty()) {
+			System.out.println("No customers have been registered.");
+		} else {
+			customers.forEach(customer -> System.out.println(customer));
+		}
 	}
 
 	// Method to display all rooms
 	private void displayAllRooms() {
-		System.out.println(AdminRepository.getAllRooms().toString());
+		Collection<IRoom> rooms = AdminRepository.getAllRooms();
+		if (rooms.isEmpty()) {
+			System.out.println("No rooms have been created.");
+		} else {
+			rooms.forEach(room -> System.out.println(room));
+		}
 	}
 
 	// Method for adding rooms
 	public void addRooms(Scanner scAdmin) {
-		List<IRoom> newRooms = new ArrayList<>();
 		boolean addingRooms = true;
 
 		while (addingRooms) {
+			List<IRoom> newRooms = new ArrayList<>();
 			try {
 				int roomNumber = Integer.parseInt(Utils.getInput(scAdmin, Constants.ADD_ROOM_PROMPT));
+				// Check for duplicate room number
+				if (AdminRepository.getAllRooms().stream().anyMatch(room -> room.getRoomNumber().equals(roomNumber))) {
+					System.out.println("Error: Room number " + roomNumber
+							+ " already exists. Please enter a different room number.");
+					continue;
+				}
 				double roomPrice = Double.parseDouble(Utils.getInput(scAdmin, Constants.ROOM_PRICE_PROMPT));
 				int roomEnumeration = Integer.parseInt(Utils.getInput(scAdmin, Constants.ROOM_TYPE_PROMPT)) - 1;
 
 				newRooms.add(AdminRepository.createRoom(roomNumber, roomPrice, roomEnumeration));
-
+				AdminRepository.addRoom(newRooms);
 				String addMore = Utils.getInput(scAdmin, Constants.ADD_MORE_ROOMS_PROMPT);
 				addingRooms = addMore.equalsIgnoreCase("Y");
 
 			} catch (Exception ex) {
 				System.out.println("Error: " + ex.getLocalizedMessage());
 			}
-		}
-
-		try {
-			AdminRepository.addRoom(newRooms);
-		} catch (Exception ex) {
-			System.out.println("Error adding rooms: " + ex.getLocalizedMessage());
 		}
 	}
 }
