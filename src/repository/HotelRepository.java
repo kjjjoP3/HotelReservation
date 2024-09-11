@@ -47,7 +47,7 @@ public class HotelRepository {
 		return reservation;
 	}
 
-	public static Collection<Reservation> getCustomersReservations(String customerEmail) {
+	public static Collection<String> getCustomersReservations(String customerEmail) {
 		return reservationService.getCustomersReservation(customerService.getCustomer(customerEmail));
 	}
 
